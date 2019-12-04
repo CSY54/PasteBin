@@ -12,9 +12,6 @@ def home(request):
         filename = request.POST.get('filename')
         content = request.POST.get('content')
 
-        print(f'filename: {filename}')
-        print(f'content: {content}')
-
         res = {}
 
         if not (0 < len(filename) < 32):
@@ -27,7 +24,6 @@ def home(request):
         try:
             if 'success' not in res:
                 hash = sha256(content.encode('utf-8')).hexdigest()
-                print(f'hash: {hash}')
                 Post.objects.create(id=hash, filename=filename, content=content)
                 res['success'] = True
                 res['id'] = hash
@@ -42,13 +38,9 @@ def home(request):
     else:
         hash = request.GET.get('id')
 
-        print(f'hash: {hash}')
-
         if hash is not None:
             try:
                 res = Post.objects.get(id=hash)
-                print(res)
-                print(res.filename)
                 return render(request, 'index.html', {
                     'is_post': True,
                     'filename': res.filename,
