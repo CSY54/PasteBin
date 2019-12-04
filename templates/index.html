@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>PasteBin</title>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <h1>PasteBin</h1>
+  {% if is_post %}
+    {% if error %}
+      <h2>No Such Post</h2>
+    {% else %}
+      <div>
+        <div>
+            Filename:
+            <span>{{ filename }}</span>
+        </div>
+        <div>
+          Content:
+          <pre><code class="plaintext">{{ content }}</code></pre>
+        </div>
+        <div>
+          Timestamp:
+          <span>{{ timestamp }}</span>
+        </div>
+      </div>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/default.min.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script>
+    {% endif %}
+  {% else %}
+    <div>
+      <form id="form">
+        {% csrf_token %}
+        Filename: <input type="text" name="filename" required>
+        <br>
+        Content:<br>
+        <textarea name="content" width="25%" required></textarea>
+        <br>
+        <button type="submit">Submit!</button>
+      </form>
+    </div>
+    <div id="message"></div>
+    <script>
+      $(document).ready(function() {
+        $('#form').on('submit', function(e) {
+          e.preventDefault();
+          $.ajax({
+            url: '/',
+            type: 'POST',
+            data: {
+              csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val(),
+              filename: $('[name=filename]').val(),
+              content: $('[name=content]').val(),
+            },
+            success: function(res) {
+              if (!res.success) {
+                $('#message').text(res.message);
+              } else {
+                $('#message').empty();
+                window.location.href = location.pathname + '?id=' + res.id;
+              }
+            },
+            fail: function(xhr, textStatus, errorThrown) {
+            },
+          });
+        });
+      });
+    </script>
+  {% endif %}
+</body>
+
+</html>
