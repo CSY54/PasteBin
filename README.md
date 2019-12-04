@@ -10,6 +10,8 @@ My first project made with [Django](https://www.djangoproject.com/).
 2. `python3 manage.py migrate`
 3. `python3 manage.py runserver`
 
+> LOL I don't know how to deploy this
+
 ## TODO
 
 - CSS
