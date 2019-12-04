@@ -6,8 +6,9 @@ My first project made with [Django](https://www.djangoproject.com/).
 
 ## Deploy
 
-1. `python3 manage.py migrate`
-2. `python3 manage.py runserver`
+1. Generate a secret key `python3 -c "import string, random;open('secret.txt', 'w').write(''.join(random.choice(string.ascii_letters+string.digits+string.punctuation) for _ in range(64)))"`
+2. `python3 manage.py migrate`
+3. `python3 manage.py runserver`
 
 ## TODO
 
