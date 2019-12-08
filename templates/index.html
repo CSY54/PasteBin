@@ -3,7 +3,8 @@
 
 <head>
   <title>PasteBin</title>
-  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <!-- script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -56,11 +57,12 @@
               content: $('[name=content]').val(),
             },
             success: function(res) {
+              console.log(res);
               if (!res.success) {
                 $('#message').text(res.message);
               } else {
                 $('#message').empty();
-                window.location.href = location.pathname + '?id=' + res.id;
+                window.location.href = location.pathname + '?filename=' + encodeURIComponent(res.filename);
               }
             },
             fail: function(xhr, textStatus, errorThrown) {
