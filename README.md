@@ -14,5 +14,4 @@ My first project made with [Django](https://www.djangoproject.com/).
 
 ## TODO
 
-- CSS
 - Functionality.
