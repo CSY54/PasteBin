@@ -3,77 +3,106 @@
 
 <head>
   <title>PasteBin</title>
-  <!-- script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script -->
-  <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+  <link rel="stylesheet" href="https://bootswatch.com/4/cyborg/bootstrap.min.css">
+  <script src="https://bootswatch.com/_vendor/jquery/dist/jquery.min.js"></script>
+  <script src="https://bootswatch.com/_vendor/popper.js/dist/umd/popper.min.js"></script>
+  <script src="https://bootswatch.com/_vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+  <style>
+    h1 {
+      text-align: center;
+      padding-top: 20px;
+    }
+    .error-msg {
+      text-align: center;
+    }
+    .timestamp {
+      text-align: right;
+    }
+  </style>
 </head>
 
 <body>
-  <h1>PasteBin</h1>
-  {% if is_post %}
-    {% if error %}
-      <h2>No Such Post</h2>
-    {% else %}
-      <div>
+  <div class="container">
+    <h1>PasteBin</h1>
+    <div class="jumbotron">
+      {% if is_post %}
+        {% if error %}
+          <h4 class="error-msg">No Such Post</h4>
+        {% else %}
+          <h4>{{ filename }}</h4>
+          <hr>
+          <div>
+            <pre><code>{{ content }}</code></pre>
+          </div>
+          <hr>
+          <div>
+            <p class="text-muted text-center">
+              <small>{{ timestamp }}</small>
+            </p>
+          </div>
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/default.min.css">
+          <link rel="stylesheet" href="https://highlightjs.org/static/demo/styles/tomorrow-night-eighties.css">
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+          <script>hljs.initHighlightingOnLoad();</script>
+       {% endif %}
+        <hr>
+        <a href="/"><button class="btn btn-primary btn-lg btn-block">Add a new post!</button></a>
+      {% else %}
         <div>
-            Filename:
-            <span>{{ filename }}</span>
+          <h4>New Post</h4>
+          <hr>
+          <form id="form">
+            {% csrf_token %}
+            <fieldset>
+              <div class="form-group">
+                <label for="filename">Filename</label>
+                <input id="filename" type="text" class="form-control" placeholder="Filename required" required>
+              </div>
+              <div class="form-group">
+                <label for="content">Content</label>
+                <textarea id="content" class="form-control" rows="10" placeholder="Content required" required></textarea>
+              </div>
+              <div id="alert" class="alert alert-dismissible alert-danger">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <span id="message"></span>
+              </div>
+              <button type="submit" class="btn btn-primary btn-lg btn-block">Submit!</button>
+            </fieldset>
+          </form>
         </div>
-        <div>
-          Content:
-          <pre><code class="plaintext">{{ content }}</code></pre>
-        </div>
-        <div>
-          Timestamp:
-          <span>{{ timestamp }}</span>
-        </div>
-      </div>
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/default.min.css">
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
-      <script>hljs.initHighlightingOnLoad();</script>
-    {% endif %}
-    <br>
-    <a href="/">Add a new post!</a>
-  {% else %}
-    <div>
-      <form id="form">
-        {% csrf_token %}
-        Filename: <input type="text" name="filename" required>
-        <br>
-        Content:<br>
-        <textarea name="content" width="25%" required></textarea>
-        <br>
-        <button type="submit">Submit!</button>
-      </form>
-    </div>
-    <div id="message"></div>
-    <script>
-      $(document).ready(function() {
-        $('#form').on('submit', function(e) {
-          e.preventDefault();
-          $.ajax({
-            url: '/',
-            type: 'POST',
-            data: {
-              csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val(),
-              filename: $('[name=filename]').val(),
-              content: $('[name=content]').val(),
-            },
-            success: function(res) {
-              console.log(res);
-              if (!res.success) {
-                $('#message').text(res.message);
-              } else {
-                $('#message').empty();
-                window.location.href = location.pathname + '?filename=' + encodeURIComponent(res.filename);
-              }
-            },
-            fail: function(xhr, textStatus, errorThrown) {
-            },
+        <script>
+          $(document).ready(function() {
+            $('#alert').hide();
+            $('#form').on('submit', function(e) {
+              e.preventDefault();
+              $.ajax({
+                url: '/',
+                type: 'POST',
+                data: {
+                  csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val(),
+                  filename: $('[id=filename]').val(),
+                  content: $('[id=content]').val(),
+                },
+                success: function(res) {
+                  console.log(res);
+                  if (!res.success) {
+                    $('#message').empty().text(res.message);
+                    $('#alert').show();
+                  } else {
+                    window.location.href = location.pathname + '?filename=' + encodeURIComponent(res.filename);
+                  }
+                },
+                fail: function(xhr, textStatus, errorThrown) {
+                },
+              });
+            });
           });
-        });
-      });
-    </script>
-  {% endif %}
+        </script>
+      {% endif %}
+    </div>
+  </div>
 </body>
 
 </html>
